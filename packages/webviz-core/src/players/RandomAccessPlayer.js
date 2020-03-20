@@ -400,6 +400,7 @@ export default class RandomAccessPlayer implements Player {
     if (!this._isPlaying) {
       return;
     }
+    console.log("pausePlayback()")
     this._metricsCollector.pause();
     // clear out last tick millis so we don't read a huge chunk when we unpause
     this._lastTickMillis = undefined;

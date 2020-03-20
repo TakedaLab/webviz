@@ -42,6 +42,8 @@ const ROSLIB = window.ROSLIB;
 // support raw ROS messages; instead we use the CBOR compression provided by roslibjs, which
 // unmarshalls into plain JS objects.
 export default class RosbridgePlayer implements Player {
+  _isPlaying: boolean = true;
+
   _url: string; // WebSocket URL.
   _rosClient: ?ROSLIB.Ros; // The roslibjs client when we're connected.
   _id: string = uuid.v4(); // Unique ID for this player.
@@ -280,8 +282,32 @@ export default class RosbridgePlayer implements Player {
   // Bunch of unsupported stuff. Just don't do anything for these.
   setPublishers(publishers: AdvertisePayload[]) {}
   publish(request: PublishPayload) {}
-  startPlayback() {}
-  pausePlayback() {}
+  startPlayback() {
+    if (this._isPlaying) {
+      return;
+    }
+    const request = new Request('http://192.168.1.108:30200/play');
+    fetch(request)
+      .then(response => {
+        console.log(response.json())
+        this._isPlaying = true;
+        this._emitState();
+      });
+  }
+  pausePlayback() {
+    if (!this._isPlaying) {
+      return;
+    }
+    const request = new Request('http://192.168.1.108:30200/pause');
+    fetch(request)
+      .then(response => {
+        console.log("pausePlayback()")
+        console.log(response.json())
+        this._lastTickMillis = undefined;
+        this._isPlaying = false;
+        this._emitState();
+      });
+  }
   seekPlayback(time: Time) {}
   setPlaybackSpeed(speedFraction: number) {}
 }
