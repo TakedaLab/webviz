@@ -13,13 +13,14 @@ import { DIAGNOSTIC_TOPIC } from "./util/globalConstants";
 
 /*
 We've split this code out seperately from the rest of the hooks so that we can lazy load these components by
-lazily importing this file at runtime. 
+lazily importing this file at runtime.
 */
 
 export function panelsByCategory() {
   const GlobalVariables = require("webviz-core/src/panels/GlobalVariables").default;
   const DiagnosticStatusPanel = require("webviz-core/src/panels/diagnostics/DiagnosticStatusPanel").default;
   const DiagnosticSummary = require("webviz-core/src/panels/diagnostics/DiagnosticSummary").default;
+  const HDLPanel = require("webviz-core/src/panels/HDL").default;
   const ImageViewPanel = require("webviz-core/src/panels/ImageView").default;
   const Internals = require("webviz-core/src/panels/Internals").default;
   const NodePlayground = require("webviz-core/src/panels/NodePlayground").default;
@@ -58,6 +59,7 @@ export function panelsByCategory() {
     { title: "Number of Renders", component: NumberOfRenders },
     { title: "Playback Performance", component: PlaybackPerformance },
     { title: "Subscribe to List", component: SubscribeToList },
+    { title: "HDL Custom Panel", component: HDLPanel },
   ];
 
   return { ros, utilities, debugging };
