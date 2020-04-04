@@ -145,6 +145,14 @@ const changeGlobalKey = (newKey, oldKey, globalVariables, idx, overwriteGlobalVa
   });
 };
 
+const TestComponent = (props: {}) => {
+  return (
+    <div>
+      {props.testVariable}
+    </div>
+  );
+};
+
 function GlobalVariables(props: {}): Node {
   const [btnMessage, setBtnMessage] = useState<string>("Copy");
   const { globalVariables, setGlobalVariables, overwriteGlobalVariables } = useGlobalVariables();
@@ -168,6 +176,9 @@ function GlobalVariables(props: {}): Node {
   return (
     <SGlobalVariables>
       <PanelToolbar helpContent={helpContent} floating />
+      <TestComponent
+        testVariable={globalVariables.test}
+      />
       <table>
         <tbody>
           {linked.map((name, idx) => {
