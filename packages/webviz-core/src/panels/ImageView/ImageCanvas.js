@@ -347,7 +347,7 @@ export default class ImageCanvas extends React.Component<Props, State> {
   };
 
   renderCurrentImage = debouncePromise(async () => {
-    const { image, rawMarkerData } = this.props;
+    const { image, rawMarkerData, config } = this.props;
     try {
       const { imageMarkerDatatypes, imageMarkerArrayDatatypes } = getGlobalHooks().perPanelHooks().ImageView;
       let dimensions;
@@ -360,6 +360,7 @@ export default class ImageCanvas extends React.Component<Props, State> {
           rawMarkerData,
           imageMarkerDatatypes,
           imageMarkerArrayDatatypes,
+          config,
         });
       } else {
         dimensions = await renderImage({
@@ -368,6 +369,7 @@ export default class ImageCanvas extends React.Component<Props, State> {
           rawMarkerData,
           imageMarkerDatatypes,
           imageMarkerArrayDatatypes,
+          config,
         });
       }
 
@@ -406,6 +408,18 @@ export default class ImageCanvas extends React.Component<Props, State> {
         </Item>
         <Item onClick={this.onZoomFill} dataTest={"fill-zoom"}>
           Zoom to fill
+        </Item>
+        <Item
+          onClick={() => {
+            this.props.saveConfig({ flipImageHorizontally: !this.props.config.flipImageHorizontally });
+          }}>
+          Flip image horizontally
+        </Item>
+        <Item
+          onClick={() => {
+            this.props.saveConfig({ flipImageVertically: !this.props.config.flipImageVertically });
+          }}>
+          Flip image vertically
         </Item>
       </div>
     ) : null;

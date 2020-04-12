@@ -54,6 +54,8 @@ export type ImageViewPanelHooks = {
     enabledMarkerTopics: string[],
     scale: number,
     synchronize: boolean,
+    flipImageVertically: boolean,
+    flipImageHorizontally: boolean,
   },
   imageMarkerDatatypes: string[],
   imageMarkerArrayDatatypes: string[],
@@ -69,6 +71,8 @@ export type Config = {|
   mode: "fit" | "fill" | "other" | null,
   zoomPercentage: ?number,
   offset: ?(number[]),
+  flipImageVertically: boolean,
+  flipImageHorizontally: boolean,
   saveStoryConfig?: () => void,
 |};
 

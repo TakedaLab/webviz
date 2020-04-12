@@ -19,6 +19,7 @@ import {
   decodeMono8,
   decodeMono16,
 } from "./decodings";
+import type Config from "./index";
 import { buildMarkerData, type Dimensions, type RawMarkerData, type MarkerData, type OffscreenCanvas } from "./util";
 import type { Message } from "webviz-core/src/players/types";
 import type { ImageMarker, Color, Point } from "webviz-core/src/types/Messages";
@@ -36,12 +37,14 @@ export async function renderImage({
   rawMarkerData,
   imageMarkerDatatypes,
   imageMarkerArrayDatatypes,
+  config,
 }: {
   canvas: ?(HTMLCanvasElement | OffscreenCanvas),
   imageMessage: any,
   rawMarkerData: RawMarkerData,
   imageMarkerDatatypes: string[],
   imageMarkerArrayDatatypes: string[],
+  config: Config,
 }): Promise<?Dimensions> {
   if (!canvas) {
     return null;
@@ -62,7 +65,7 @@ export async function renderImage({
 
   try {
     const bitmap = await decodeMessageToBitmap(imageMessage);
-    const dimensions = paintBitmap(canvas, bitmap, markerData, imageMarkerDatatypes, imageMarkerArrayDatatypes);
+    const dimensions = paintBitmap(canvas, bitmap, markerData, imageMarkerDatatypes, imageMarkerArrayDatatypes, config);
     bitmap.close();
     return dimensions;
   } catch (error) {
@@ -134,7 +137,8 @@ function paintBitmap(
   bitmap: ImageBitmap,
   markerData: MarkerData,
   imageMarkerDatatypes: string[],
-  imageMarkerArrayDatatypes: string[]
+  imageMarkerArrayDatatypes: string[],
+  config: Config
 ): ?Dimensions {
   let bitmapDimensions = { width: bitmap.width, height: bitmap.height };
   const ctx = canvas.getContext("2d");
@@ -154,11 +158,25 @@ function paintBitmap(
     originalHeight = bitmap.height;
   }
 
+  // flip
+  let vFlip: number = 1.0,
+    hFlip: number = 1.0,
+    xPos: number = 0.0,
+    yPos: number = 0.0;
+  if (config.flipImageVertically) {
+    vFlip = config.flipImageVertically ? -1.0 : 1.0;
+    yPos = config.flipImageVertically ? -1.0 * originalHeight : 0;
+  }
+  if (config.flipImageHorizontally) {
+    hFlip = config.flipImageHorizontally ? -1.0 : 1.0;
+    xPos = config.flipImageHorizontally ? -1.0 * originalWidth : 0;
+  }
+
   bitmapDimensions = { width: originalWidth, height: originalHeight };
   resizeCanvas(canvas, originalWidth, originalHeight);
   ctx.save();
-  ctx.scale(originalWidth / bitmap.width, originalHeight / bitmap.height);
-  ctx.drawImage(bitmap, 0, 0);
+  ctx.scale((hFlip * originalWidth) / bitmap.width, (vFlip * originalHeight) / bitmap.height);
+  ctx.drawImage(bitmap, xPos, yPos);
   ctx.restore();
   ctx.save();
   try {
